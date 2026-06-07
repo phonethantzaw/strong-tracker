@@ -130,3 +130,5 @@ Package versions in `package.json` were current as of early 2026. If anything's 
 `bun update`, or scaffold a fresh `bun create next-app` and drop the `app/`, `convex/`, and
 `middleware.ts` files in.
 # strong-tracker
+# strong-tracker
+# strong-tracker
