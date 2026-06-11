@@ -64,6 +64,12 @@ CLERK_JWT_ISSUER_DOMAIN = https://verb-noun-00.clerk.accounts.dev
 Restart `bunx convex dev` if it was running, then reload `localhost:3000`. You should be able to
 sign in, log a set, hit **Save**, and see it persist on refresh.
 
+> **Dev vs production Convex URLs are different — that's correct.**
+> - Local `.env.local` → **dev** deployment (e.g. `precise-eel-800.convex.cloud`)
+> - Vercel production → **production** deployment (e.g. `knowing-badger-905.convex.cloud`)
+> - Vercel sets `NEXT_PUBLIC_CONVEX_URL` automatically during `convex deploy` — don't add it manually on Vercel.
+> - Set `CLERK_JWT_ISSUER_DOMAIN` on **both** dev and production Convex deployments in the Convex dashboard.
+
 ---
 
 ## 4. Deploy to Vercel
@@ -77,24 +83,39 @@ field empty and enable Production (and Preview if you want).
 
 ### Manual
 1. Push to GitHub, then import the repo at https://vercel.com/new.
-2. **Convex dashboard → Settings → Generate Production Deploy Key.** Copy it.
-3. In Vercel **Settings → Environment Variables** add (Production scope):
-   - `CONVEX_DEPLOY_KEY` = the production deploy key
-   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` = your pk_...
-   - `CLERK_SECRET_KEY` = your sk_...
+2. **Convex dashboard → Production deployment (`knowing-badger-905`) → Settings → Generate Production Deploy Key.** Copy it.
+3. In Vercel **Settings → Environment Variables** add:
+   - `CONVEX_DEPLOY_KEY` = production deploy key → check **Production** only
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` = your pk_... → check **Production** and **Preview**
+   - `CLERK_SECRET_KEY` = your sk_... → check **Production** and **Preview**
    > You do **not** set `NEXT_PUBLIC_CONVEX_URL` manually — the deploy command sets it.
-4. **Settings → Build & Deployment → Build Command**, override to:
+4. **If you deploy from a branch other than `main`** (e.g. `dev`), Vercel treats it as a **Preview** deploy. You also need:
+   - Convex dashboard → **Project Settings → Generate Preview Deploy Key**
+   - A second `CONVEX_DEPLOY_KEY` on Vercel scoped to **Preview** only (use the preview key, not the production key)
+5. **Settings → Build & Deployment → Build Command**, override to:
    ```
    bunx convex deploy --cmd 'next build'
    ```
    This deploys your Convex functions, sets `NEXT_PUBLIC_CONVEX_URL`, then builds Next.
-5. For **production Clerk**, repeat step 3 of the Clerk section against your *production* Clerk
-   instance and put that Issuer URL into the **production** Convex deployment's env vars.
-6. Deploy.
+6. Put `CLERK_JWT_ISSUER_DOMAIN` into the **production** Convex deployment's env vars (already done if `bunx convex env list --prod` shows it).
+7. Deploy from `main` for production, or ensure Preview keys are set for branch deploys.
 
 > Gotcha: if a build ever fails with `convex/_generated` "module not found", it's the known
 > ordering issue. Either keep the `--cmd 'next build'` form (recommended) or fall back to a build
 > command of `bunx convex deploy && next build`.
+
+### Vercel build failed?
+
+Open the failed deployment → **Building** log and find the **first red error** above `exited with 1`.
+
+| Error in log | Fix |
+|---|---|
+| `no Convex deployment configuration found` / missing `CONVEX_DEPLOY_KEY` | Add deploy key on Vercel for the **right environment** (Preview vs Production — see step 4 above) |
+| `CLERK_JWT_ISSUER_DOMAIN ... not set` | Convex dashboard → **Production** → Environment Variables |
+| `Can't resolve '../convex/_generated/api'` | Build command must be `bunx convex deploy --cmd 'next build'`, not `next build` alone |
+| `@clerk/nextjs: Missing publishableKey` | Add Clerk keys on Vercel (Production + Preview) |
+
+**Quick test:** merge/push to `main` and redeploy — production-scoped env vars only apply to production deploys, not preview deploys from the `dev` branch.
 
 ---
 
