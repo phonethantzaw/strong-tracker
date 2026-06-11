@@ -100,9 +100,10 @@ field empty and enable Production (and Preview if you want).
 6. Put `CLERK_JWT_ISSUER_DOMAIN` into the **production** Convex deployment's env vars (already done if `bunx convex env list --prod` shows it).
 7. Deploy from `main` for production, or ensure Preview keys are set for branch deploys.
 
-> Gotcha: if a build ever fails with `convex/_generated` "module not found", it's the known
-> ordering issue. Either keep the `--cmd 'next build'` form (recommended) or fall back to a build
-> command of `bunx convex deploy && next build`.
+> Gotcha: `convex deploy --cmd 'next build'` runs `next build` **before** it regenerates
+> `convex/_generated/`, so that folder must be **committed to git** (Vercel has no copy otherwise).
+> After changing Convex functions, run `bunx convex codegen` locally and commit the updated
+> `convex/_generated/` files.
 
 ### Vercel build failed?
 
