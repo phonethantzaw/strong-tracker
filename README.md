@@ -123,34 +123,43 @@ Open the failed deployment → **Building** log and find the **first red error**
 ## Project structure
 
 ```
-convex/
-  schema.ts            # sessions table (per-user, indexed)
-  auth.config.ts       # trusts Clerk's issuer
-  sessions.ts          # listMine / save / remove (all scoped to the signed-in user)
 app/
-  layout.tsx           # ClerkProvider > ConvexClientProvider, fonts
+  page.tsx                 # sign-in gate; redirects to /dashboard when authenticated
+  layout.tsx               # ClerkProvider, ConvexClientProvider, fonts, theme
+  globals.css
   providers/ConvexClientProvider.tsx
-  lib/plan.ts          # the A/B program + PF swaps + rules (static config)
-  page.tsx             # auth gate + the tracker UI
-  globals.css          # the ported design
-middleware.ts          # clerkMiddleware
+  (app)/layout.tsx         # sidebar shell + auth gate for app routes
+  (app)/dashboard/page.tsx # stats, volume chart, activity calendar, program overview
+  (app)/track/page.tsx     # workout tracker (sets, rest timer, save)
+  (app)/history/page.tsx   # past sessions, delete
+  lib/plan.ts              # A/B program + Planet Fitness swaps (static config)
+  lib/stats.ts             # volume, streaks, chart data from sessions
+  hooks/use-dashboard-stats.ts
+components/
+  auth/gate.tsx            # Clerk sign-in for unauthenticated users
+  dashboard/               # dashboard cards, charts, calendar
+  track/tracker.tsx        # main logging UI
+  layout/                  # sidebar, header, theme toggle
+  ui/                      # shadcn components
+convex/
+  schema.ts                # sessions table (per-user, indexed)
+  auth.config.ts           # trusts Clerk's issuer
+  sessions.ts              # listMine / save / remove (scoped to signed-in user)
+middleware.ts              # clerkMiddleware
 ```
 
-The exercise program lives in `app/lib/plan.ts` — edit sets/reps/swaps there. Only your logged
-**sessions** go in the database.
+Routes: `/` → sign in → `/dashboard`. Sidebar links to **Track Workout** (`/track`) and **History** (`/history`).
+
+The exercise program lives in `app/lib/plan.ts` — edit sets/reps/swaps there. Only logged **sessions** go in the database.
 
 ---
 
 ## Roadmap (next features)
-- PR chart per lift (line over time)
+- Per-lift PR chart (line over time per exercise)
 - CSV export of all sessions
-- Weekly A/B/A → B/A/B schedule view
 - Phase 2: 4-day Upper/Lower split once the beginner phase is locked in
 
 ## Version note
 Package versions in `package.json` were current as of early 2026. If anything's drifted, run
-`bun update`, or scaffold a fresh `bun create next-app` and drop the `app/`, `convex/`, and
+`bun update`, or scaffold a fresh `bun create next-app` and drop the `app/`, `components/`, `convex/`, and
 `middleware.ts` files in.
-# strong-tracker
-# strong-tracker
-# strong-tracker
