@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Oswald, DM_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ConvexClientProvider } from "./providers/ConvexClientProvider";
 import "./globals.css";
 
@@ -26,9 +28,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={`${anton.variable} ${oswald.variable} ${dmSans.variable}`}>
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body suppressHydrationWarning className={`${anton.variable} ${oswald.variable} ${dmSans.variable} font-sans antialiased`}>
+          <ThemeProvider>
+            <TooltipProvider>
+              <ConvexClientProvider>{children}</ConvexClientProvider>
+            </TooltipProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
