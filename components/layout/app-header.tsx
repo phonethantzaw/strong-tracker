@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { Bell, Dumbbell, LayoutDashboard, PanelLeft, Search } from "lucide-react";
+import { Bell, Dumbbell, LayoutDashboard, PanelLeft, PlayCircle, Search } from "lucide-react";
 import { PLAN } from "@/app/lib/plan";
 import { useDashboardStats } from "@/app/hooks/use-dashboard-stats";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -149,6 +149,15 @@ export function AppHeader() {
             >
               <Dumbbell className="mr-2 size-4" />
               Track Workout
+            </CommandItem>
+            <CommandItem
+              onSelect={() => {
+                setOpen(false);
+                router.push("/videos");
+              }}
+            >
+              <PlayCircle className="mr-2 size-4" />
+              Videos
             </CommandItem>
             <CommandItem
               onSelect={() => {

@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as programVideos from "../programVideos.js";
 import type * as sessions from "../sessions.js";
 
 import type {
@@ -17,6 +18,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  programVideos: typeof programVideos;
   sessions: typeof sessions;
 }>;
 

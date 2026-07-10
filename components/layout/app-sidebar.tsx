@@ -7,6 +7,7 @@ import {
   History,
   LayoutDashboard,
   PanelLeft,
+  PlayCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,6 +28,7 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/track", label: "Track Workout", icon: Dumbbell },
+  { href: "/videos", label: "Videos", icon: PlayCircle },
   { href: "/history", label: "History", icon: History },
 ];
 
