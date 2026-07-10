@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { PLAN, RULES, type Day, type Mode } from "@/app/lib/plan";
+import { DAYS, PLAN, RULES, type Day, type Mode } from "@/app/lib/plan";
 import { ExerciseCard, RestTimer, startTimerRef } from "@/components/track/exercise-card";
 import type { Draft, SetEntry } from "@/components/track/types";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ const todayStr = () => toLocalDateKey(new Date());
 
 function emptyDraft(): Draft {
   const d: Draft = {};
-  (Object.keys(PLAN) as Day[]).forEach((day) => {
+  DAYS.forEach((day) => {
     PLAN[day].ex.forEach((e) => {
       d[e.id] = Array.from({ length: e.sets }, () => ({ weight: "", reps: "" }));
     });
@@ -37,7 +37,8 @@ export function Tracker() {
   const sessions = useQuery(api.sessions.listMine);
   const save = useMutation(api.sessions.save);
 
-  const initialDay = (searchParams.get("day") === "B" ? "B" : "A") as Day;
+  const dayParam = searchParams.get("day");
+  const initialDay = (DAYS.includes(dayParam as Day) ? dayParam : "A") as Day;
   const [day, setDay] = useState<Day>(initialDay);
   const [mode, setMode] = useState<Mode>("std");
   const [draft, setDraft] = useState<Draft>(emptyDraft);
@@ -50,7 +51,7 @@ export function Tracker() {
 
   useEffect(() => {
     const nextDay = searchParams.get("day");
-    if (nextDay === "A" || nextDay === "B") setDay(nextDay);
+    if (DAYS.includes(nextDay as Day)) setDay(nextDay as Day);
   }, [searchParams]);
 
   const lastFor = useMemo(() => {
@@ -138,12 +139,11 @@ export function Tracker() {
         <CardContent className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">Day</span>
-            <Button variant={day === "A" ? "default" : "outline"} size="sm" onClick={() => setDay("A")}>
-              Workout A
-            </Button>
-            <Button variant={day === "B" ? "default" : "outline"} size="sm" onClick={() => setDay("B")}>
-              Workout B
-            </Button>
+            {DAYS.map((d) => (
+              <Button key={d} variant={day === d ? "default" : "outline"} size="sm" onClick={() => setDay(d)}>
+                Workout {d}
+              </Button>
+            ))}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-medium text-muted-foreground">Gear</span>

@@ -12,7 +12,7 @@ export default defineSchema({
   sessions: defineTable({
     userId: v.string(), // Clerk subject (identity.subject)
     date: v.string(), // YYYY-MM-DD
-    day: v.union(v.literal("A"), v.literal("B")),
+    day: v.union(v.literal("A"), v.literal("B"), v.literal("C"), v.literal("D")),
     mode: v.union(v.literal("std"), v.literal("pf")),
     // exerciseId -> array of sets
     entries: v.record(v.string(), v.array(setEntry)),

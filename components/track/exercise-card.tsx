@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle2, ChevronDown, TimerReset } from "lucide-react";
+import { CheckCircle2, ChevronDown, PlayCircle, TimerReset } from "lucide-react";
 import type { Exercise, Mode } from "@/app/lib/plan";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,8 @@ export function ExerciseCard({
           <div className="min-w-0 flex-1">
             <CardTitle className="text-base font-semibold">{ex.name}</CardTitle>
             <p className="mt-1 text-xs text-muted-foreground">
-              {ex.sets} × {ex.reps} · rest {ex.rest}
+              {ex.sets} × {ex.reps}
+              {ex.rir ? ` · RIR ${ex.rir}` : ""} · rest {ex.rest}
             </p>
             {mode === "pf" && ex.pf ? (
               <Badge variant="outline" className="mt-2 block max-w-full whitespace-normal break-words text-left leading-snug">
@@ -119,10 +120,20 @@ export function ExerciseCard({
 
           {ex.note ? <p className="text-xs text-muted-foreground">{ex.note}</p> : null}
 
-          <Button type="button" variant="outline" size="sm" onClick={onRest}>
-            <TimerReset className="size-4" />
-            Rest {ex.rest}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" size="sm" onClick={onRest}>
+              <TimerReset className="size-4" />
+              Rest {ex.rest}
+            </Button>
+            {ex.videoUrl ? (
+              <Button type="button" variant="outline" size="sm" asChild>
+                <a href={ex.videoUrl} target="_blank" rel="noopener noreferrer">
+                  <PlayCircle className="size-4" />
+                  Watch
+                </a>
+              </Button>
+            ) : null}
+          </div>
         </CardContent>
       ) : null}
     </Card>

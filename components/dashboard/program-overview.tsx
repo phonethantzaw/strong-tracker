@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
-import { PLAN, type Day } from "@/app/lib/plan";
+import { DAYS, PLAN, type Day } from "@/app/lib/plan";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,15 +20,18 @@ export function ProgramOverview() {
       <Card className="border-border/60 bg-card/80 backdrop-blur">
         <CardHeader>
           <CardTitle>Program overview</CardTitle>
-          <CardDescription>Your current A/B split and lift lineup</CardDescription>
+          <CardDescription>Your current 4-day split and lift lineup</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="A">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="A">Workout A</TabsTrigger>
-              <TabsTrigger value="B">Workout B</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4">
+              {DAYS.map((day) => (
+                <TabsTrigger key={day} value={day}>
+                  {PLAN[day].title}
+                </TabsTrigger>
+              ))}
             </TabsList>
-            {(Object.keys(PLAN) as Day[]).map((day) => {
+            {DAYS.map((day) => {
               const workout = PLAN[day];
               return (
                 <TabsContent key={day} value={day} className="mt-4 space-y-4">
@@ -50,7 +53,8 @@ export function ProgramOverview() {
                             {String(index + 1).padStart(2, "0")}. {ex.name}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {ex.sets} × {ex.reps} · rest {ex.rest}
+                            {ex.sets} × {ex.reps}
+                            {ex.rir ? ` · RIR ${ex.rir}` : ""} · rest {ex.rest}
                           </p>
                         </div>
                       </div>

@@ -1,5 +1,5 @@
 import type { Doc } from "@/convex/_generated/dataModel";
-import { PLAN, type Day } from "./plan";
+import { DAYS, PLAN, type Day } from "./plan";
 
 export type Session = Doc<"sessions">;
 export type SetEntry = { weight: string; reps: string };
@@ -216,7 +216,8 @@ export function recentActivity(sessions: Session[], limit = 8): ActivityItem[] {
 export function suggestNextWorkout(sessions: Session[]): Day {
   const latest = sessions[0];
   if (!latest) return "A";
-  return latest.day === "A" ? "B" : "A";
+  const idx = DAYS.indexOf(latest.day);
+  return DAYS[(idx + 1) % DAYS.length];
 }
 
 export function buildNudges(sessions: Session[], now = new Date()): Nudge[] {
