@@ -15,14 +15,15 @@ const oswald = Oswald({
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm" });
 
 export const metadata: Metadata = {
-  title: "STRONG // A·B Strength Tracker",
-  description: "3-day A/B strength program tracker with progressive-overload logging.",
+  title: "STRONG // Strength Tracker",
+  description: "4-day strength program tracker with progressive-overload logging.",
 };
 
 export const viewport: Viewport = {
   themeColor: "#0a0b0a",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

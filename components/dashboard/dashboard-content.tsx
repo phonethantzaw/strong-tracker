@@ -17,7 +17,7 @@ export function DashboardContent() {
   const stats = useDashboardStats();
 
   return (
-    <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
+    <div className="flex flex-1 flex-col gap-6 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:p-6">
       <section className="space-y-2">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-[family-name:var(--font-anton)] text-3xl uppercase tracking-wide md:text-4xl">
@@ -26,7 +26,7 @@ export function DashboardContent() {
           <Badge variant="outline">Workout {stats.nextWorkout} up next</Badge>
         </div>
         <p className="max-w-2xl text-sm text-muted-foreground">
-          Track your consistency, volume, and recent progress across the A/B program.
+          Track your consistency, volume, and recent progress across the 4-day program.
         </p>
       </section>
 

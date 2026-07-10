@@ -58,8 +58,8 @@ export function AppHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <SidebarTrigger className="-ml-1" />
+      <header className="sticky top-0 z-20 flex min-h-14 shrink-0 items-center gap-2 border-b bg-background/80 px-4 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <SidebarTrigger className="-ml-1 size-9" />
         <Separator orientation="vertical" className="mr-1 h-4" />
 
         <Button
@@ -78,7 +78,7 @@ export function AppHeader() {
         <Button
           variant="outline"
           size="icon"
-          className="size-9 sm:hidden"
+          className="size-10 sm:hidden"
           onClick={() => setOpen(true)}
           aria-label="Open search"
         >
@@ -88,7 +88,7 @@ export function AppHeader() {
         <div className="ml-auto flex items-center gap-1">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative size-9" aria-label="Notifications">
+              <Button variant="ghost" size="icon" className="relative size-10" aria-label="Notifications">
                 <Bell className="size-4" />
                 {nudges.length > 0 ? (
                   <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary" />

@@ -49,7 +49,7 @@ export function ExerciseCard({
       <CardHeader className="px-4 py-3">
         <button
           type="button"
-          className="flex w-full items-start gap-3 text-left"
+          className="flex min-h-11 w-full items-start gap-3 text-left"
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={`exercise-${ex.id}`}
@@ -57,7 +57,7 @@ export function ExerciseCard({
           <div className="font-mono text-sm text-muted-foreground">{String(index + 1).padStart(2, "0")}</div>
           <div className="min-w-0 flex-1">
             <CardTitle className="text-base font-semibold">{ex.name}</CardTitle>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 break-words text-xs text-muted-foreground">
               {ex.sets} × {ex.reps}
               {ex.rir ? ` · RIR ${ex.rir}` : ""} · rest {ex.rest}
             </p>
@@ -74,7 +74,7 @@ export function ExerciseCard({
 
       {open ? (
         <CardContent className="space-y-4 border-t px-4 py-4" id={`exercise-${ex.id}`}>
-          <p className="text-xs text-muted-foreground">
+          <p className="break-words text-xs text-muted-foreground">
             {last ? (
               <>
                 Last ({last.date}): <span className="font-medium text-foreground">{fmtSets(last.sets, ex.hint) || "–"}</span>
@@ -121,16 +121,20 @@ export function ExerciseCard({
           {ex.note ? <p className="text-xs text-muted-foreground">{ex.note}</p> : null}
 
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={onRest}>
+            <Button type="button" variant="outline" size="sm" className="h-11 flex-1 sm:flex-none" onClick={onRest}>
               <TimerReset className="size-4" />
               Rest {ex.rest}
             </Button>
             {ex.videoUrl ? (
-              <Button type="button" variant="outline" size="sm" asChild>
-                <a href={ex.videoUrl} target="_blank" rel="noopener noreferrer">
-                  <PlayCircle className="size-4" />
-                  Watch
-                </a>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-11 flex-1 sm:flex-none"
+                onClick={() => window.open(ex.videoUrl, "_blank", "noopener,noreferrer")}
+              >
+                <PlayCircle className="size-4" />
+                Watch
               </Button>
             ) : null}
           </div>
@@ -188,26 +192,30 @@ export function RestTimer({
   return (
     <div
       className={cn(
-        "pointer-events-none fixed inset-x-0 bottom-4 z-50 mx-auto w-[calc(100%-2rem)] max-w-2xl translate-y-32 opacity-0 transition-all",
+        "pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 mx-auto w-[calc(100%-2rem)] max-w-2xl translate-y-32 opacity-0 transition-all",
         show && "pointer-events-auto translate-y-0 opacity-100",
       )}
       role="status"
       aria-live="polite"
     >
-      <div className={cn("flex items-center gap-3 rounded-xl border bg-card p-4 shadow-lg", done && "border-primary/70")}>
-        <div className={cn("min-w-16 text-3xl font-semibold tabular-nums", done ? "text-primary" : "text-foreground")}>
-          {m}:{String(s).padStart(2, "0")}
+      <div className={cn("flex flex-col gap-3 rounded-xl border bg-card p-4 shadow-lg sm:flex-row sm:items-center", done && "border-primary/70")}>
+        <div className="flex items-center gap-3">
+          <div className={cn("min-w-16 text-3xl font-semibold tabular-nums", done ? "text-primary" : "text-foreground")}>
+            {m}:{String(s).padStart(2, "0")}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">{done ? "Go!" : `${name} - rest`}</p>
+            <p className="text-xs text-muted-foreground">{done ? "next set" : "recover and reset"}</p>
+          </div>
         </div>
-        <div className="flex-1">
-          <p className="text-sm font-medium">{done ? "Go!" : `${name} - rest`}</p>
-          <p className="text-xs text-muted-foreground">{done ? "next set" : "recover and reset"}</p>
+        <div className="flex gap-2">
+          <Button type="button" size="sm" variant="outline" className="h-11 flex-1 sm:flex-none" onClick={() => setPaused((p) => !p)}>
+            {paused ? "Resume" : "Pause"}
+          </Button>
+          <Button type="button" size="sm" variant="ghost" className="h-11 flex-1 sm:flex-none" onClick={() => setShow(false)} aria-label="Close timer">
+            Close
+          </Button>
         </div>
-        <Button type="button" size="sm" variant="outline" onClick={() => setPaused((p) => !p)}>
-          {paused ? "Resume" : "Pause"}
-        </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={() => setShow(false)} aria-label="Close timer">
-          Close
-        </Button>
       </div>
     </div>
   );

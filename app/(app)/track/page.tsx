@@ -14,7 +14,7 @@ function TrackFallback() {
 
 export default function TrackPage() {
   return (
-    <div className="p-4 md:p-6">
+    <div className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:p-6">
       <div className="mb-6">
         <h1 className="font-[family-name:var(--font-anton)] text-3xl uppercase tracking-wide md:text-4xl">
           Track Workout

@@ -24,10 +24,11 @@ export function ProgramOverview() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="A">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-4 gap-1">
               {DAYS.map((day) => (
-                <TabsTrigger key={day} value={day}>
-                  {PLAN[day].title}
+                <TabsTrigger key={day} value={day} className="px-1 text-xs sm:px-2 sm:text-sm">
+                  <span className="sm:hidden">{day}</span>
+                  <span className="hidden sm:inline">{PLAN[day].title}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -52,7 +53,7 @@ export function ProgramOverview() {
                           <p className="text-sm font-medium">
                             {String(index + 1).padStart(2, "0")}. {ex.name}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="break-words text-xs text-muted-foreground">
                             {ex.sets} × {ex.reps}
                             {ex.rir ? ` · RIR ${ex.rir}` : ""} · rest {ex.rest}
                           </p>

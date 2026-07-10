@@ -124,35 +124,66 @@ export function Tracker() {
   }
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-6 pb-[calc(6rem+env(safe-area-inset-bottom))]">
       <Card className="border-border/70">
-        <CardHeader className="space-y-4">
+        <CardHeader className="space-y-4 px-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-2">
-            <CardTitle className="font-[family-name:var(--font-anton)] text-3xl uppercase tracking-wide md:text-4xl">
+            <CardTitle className="font-[family-name:var(--font-anton)] text-2xl uppercase tracking-wide sm:text-3xl md:text-4xl">
               {plan.title}
             </CardTitle>
-            <Badge variant="outline">{mode === "pf" ? "Planet Fitness" : "Standard"}</Badge>
+            <Badge variant="outline" className="whitespace-normal">
+              {mode === "pf" ? (
+                <>
+                  <span className="sm:hidden">PF</span>
+                  <span className="hidden sm:inline">Planet Fitness</span>
+                </>
+              ) : (
+                "Standard"
+              )}
+            </Badge>
           </div>
           <p className="text-sm text-muted-foreground">{plan.focus}</p>
           <p className="text-xs text-muted-foreground">{plan.warm}</p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
+        <CardContent className="space-y-4 px-4 sm:px-6">
+          <div className="space-y-2">
             <span className="text-xs font-medium text-muted-foreground">Day</span>
-            {DAYS.map((d) => (
-              <Button key={d} variant={day === d ? "default" : "outline"} size="sm" onClick={() => setDay(d)}>
-                Workout {d}
-              </Button>
-            ))}
+            <div className="grid grid-cols-4 gap-2">
+              {DAYS.map((d) => (
+                <Button
+                  key={d}
+                  variant={day === d ? "default" : "outline"}
+                  size="sm"
+                  className="h-11 min-w-0 px-1 text-xs sm:px-3 sm:text-sm"
+                  onClick={() => setDay(d)}
+                >
+                  <span className="sm:hidden">{d}</span>
+                  <span className="hidden sm:inline">Workout {d}</span>
+                </Button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="space-y-2">
             <span className="text-xs font-medium text-muted-foreground">Gear</span>
-            <Button variant={mode === "std" ? "default" : "outline"} size="sm" onClick={() => setMode("std")}>
-              Standard
-            </Button>
-            <Button variant={mode === "pf" ? "default" : "outline"} size="sm" onClick={() => setMode("pf")}>
-              Planet Fitness
-            </Button>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant={mode === "std" ? "default" : "outline"}
+                size="sm"
+                className="h-11"
+                onClick={() => setMode("std")}
+              >
+                Standard
+              </Button>
+              <Button
+                variant={mode === "pf" ? "default" : "outline"}
+                size="sm"
+                className="h-11"
+                onClick={() => setMode("pf")}
+              >
+                <span className="sm:hidden">PF</span>
+                <span className="hidden sm:inline">Planet Fitness</span>
+              </Button>
+            </div>
           </div>
           <p className="text-xs text-muted-foreground">
             {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })} · {loggedCount}/{plan.ex.length} logged
@@ -177,15 +208,29 @@ export function Tracker() {
         ))}
       </div>
 
-      <Button className="w-full" size="lg" onClick={handleSave} disabled={saving}>
-        {saving ? "Saving..." : justSaved ? "Saved - nice work" : `Save ${plan.title} · ${todayStr()}`}
+      <Button
+        className="h-12 w-full whitespace-normal text-center leading-snug"
+        size="lg"
+        onClick={handleSave}
+        disabled={saving}
+      >
+        {saving ? (
+          "Saving..."
+        ) : justSaved ? (
+          "Saved - nice work"
+        ) : (
+          <>
+            <span className="hidden sm:inline">{`Save ${plan.title} · ${todayStr()}`}</span>
+            <span className="sm:hidden">{`Save Workout ${day}`}</span>
+          </>
+        )}
       </Button>
 
       <Card className="border-border/70">
-        <CardHeader>
-          <CardTitle>The 3 rules that make this work</CardTitle>
+        <CardHeader className="px-4 sm:px-6">
+          <CardTitle>Program rules</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 px-4 sm:px-6">
           {RULES.map((r) => (
             <div key={r.n} className="rounded-lg border bg-muted/20 p-3">
               <p className="text-sm font-medium">
@@ -203,7 +248,7 @@ export function Tracker() {
       <RestTimer registerStart={(fn) => (startTimerRef.current = fn)} />
       <div
         className={cn(
-          "fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded-full border bg-card px-4 py-2 text-sm shadow transition-all",
+          "fixed top-[max(1rem,env(safe-area-inset-top))] left-1/2 z-50 max-w-[calc(100%-2rem)] -translate-x-1/2 rounded-full border bg-card px-4 py-2 text-sm shadow transition-all",
           toast ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0",
         )}
         role="status"
