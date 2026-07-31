@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -32,6 +32,13 @@ function emptyDraft(): Draft {
   return d;
 }
 
+function setsForExercise(saved: SetEntry[] | undefined, setCount: number): SetEntry[] {
+  return Array.from({ length: setCount }, (_, i) => ({
+    weight: saved?.[i]?.weight ?? "",
+    reps: saved?.[i]?.reps ?? "",
+  }));
+}
+
 export function Tracker() {
   const searchParams = useSearchParams();
   const sessions = useQuery(api.sessions.listMine);
@@ -46,24 +53,59 @@ export function Tracker() {
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const hydratedRef = useRef<Set<string>>(new Set());
 
   const plan = PLAN[day];
+  const today = todayStr();
 
   useEffect(() => {
     const nextDay = searchParams.get("day");
     if (DAYS.includes(nextDay as Day)) setDay(nextDay as Day);
   }, [searchParams]);
 
+  // Prefill inputs from today's saved session for the selected workout day.
+  useEffect(() => {
+    if (!sessions) return;
+    const key = `${today}-${day}`;
+    if (hydratedRef.current.has(key)) return;
+    hydratedRef.current.add(key);
+
+    const todaySession = sessions.find((s) => s.date === today && s.day === day);
+    if (!todaySession) return;
+
+    setDraft((prev) => {
+      const alreadyTyped = PLAN[day].ex.some((e) =>
+        (prev[e.id] || []).some((s) => s.weight || s.reps),
+      );
+      if (alreadyTyped) return prev;
+
+      const next = { ...prev };
+      PLAN[day].ex.forEach((e) => {
+        next[e.id] = setsForExercise(todaySession.entries[e.id], e.sets);
+      });
+      return next;
+    });
+    setMode(todaySession.mode);
+    setJustSaved(true);
+  }, [sessions, day, today]);
+
+  const todaySessionExists = useMemo(
+    () => !!sessions?.some((s) => s.date === today && s.day === day),
+    [sessions, today, day],
+  );
+
   const lastFor = useMemo(() => {
     return (exId: string) => {
       if (!sessions) return null;
       for (const s of sessions) {
+        // Skip today's log so "Last" shows the previous session.
+        if (s.date === today) continue;
         const e = s.entries[exId];
         if (e && e.some((x) => x.weight || x.reps)) return { date: s.date, sets: e };
       }
       return null;
     };
-  }, [sessions]);
+  }, [sessions, today]);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -102,9 +144,9 @@ export function Tracker() {
     }
     setSaving(true);
     try {
-      await save({ date: todayStr(), day, mode, entries });
+      await save({ date: today, day, mode, entries });
       setJustSaved(true);
-      showToast("Session saved");
+      showToast(todaySessionExists ? "Session updated" : "Session saved");
     } catch {
       showToast("Save failed - try again");
     } finally {
@@ -186,7 +228,9 @@ export function Tracker() {
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })} · {loggedCount}/{plan.ex.length} logged
+            {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })} ·{" "}
+            {loggedCount}/{plan.ex.length} logged
+            {todaySessionExists ? " · saved today" : ""}
           </p>
         </CardContent>
       </Card>
@@ -218,9 +262,14 @@ export function Tracker() {
           "Saving..."
         ) : justSaved ? (
           "Saved - nice work"
+        ) : todaySessionExists ? (
+          <>
+            <span className="hidden sm:inline">{`Update ${plan.title} · ${today}`}</span>
+            <span className="sm:hidden">{`Update Workout ${day}`}</span>
+          </>
         ) : (
           <>
-            <span className="hidden sm:inline">{`Save ${plan.title} · ${todayStr()}`}</span>
+            <span className="hidden sm:inline">{`Save ${plan.title} · ${today}`}</span>
             <span className="sm:hidden">{`Save Workout ${day}`}</span>
           </>
         )}
