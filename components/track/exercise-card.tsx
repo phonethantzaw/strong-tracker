@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { SetEntry } from "./types";
+import { VideoPlayerDialog } from "./video-player-dialog";
 
 function fmtSets(sets: SetEntry[], hint: string) {
   return sets
@@ -40,6 +41,7 @@ export function ExerciseCard({
   onSet,
   onRest,
 }: ExerciseCardProps) {
+  const [videoOpen, setVideoOpen] = useState(false);
   const isTime = ex.repField === "sec";
   const done = draft.some((s) => (isTime ? s.reps : s.weight || s.reps));
   const repPlaceholder = ex.reps.match(/^[0-9–/]+/)?.[0] || "–";
@@ -131,7 +133,7 @@ export function ExerciseCard({
                 variant="outline"
                 size="sm"
                 className="h-11 flex-1 sm:flex-none"
-                onClick={() => window.open(ex.videoUrl, "_blank", "noopener,noreferrer")}
+                onClick={() => setVideoOpen(true)}
               >
                 <PlayCircle className="size-4" />
                 Watch
@@ -139,6 +141,15 @@ export function ExerciseCard({
             ) : null}
           </div>
         </CardContent>
+      ) : null}
+
+      {ex.videoUrl ? (
+        <VideoPlayerDialog
+          open={videoOpen}
+          onOpenChange={setVideoOpen}
+          title={ex.name}
+          url={ex.videoUrl}
+        />
       ) : null}
     </Card>
   );
