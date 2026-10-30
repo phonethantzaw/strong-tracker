@@ -85,7 +85,6 @@ export function Tracker() {
       });
       return next;
     });
-    setMode(todaySession.mode);
     setJustSaved(true);
   }, [sessions, day, today]);
 
