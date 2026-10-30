@@ -47,7 +47,7 @@ export function Tracker() {
   const dayParam = searchParams.get("day");
   const initialDay = (DAYS.includes(dayParam as Day) ? dayParam : "A") as Day;
   const [day, setDay] = useState<Day>(initialDay);
-  const [mode, setMode] = useState<Mode>("std");
+  const mode: Mode = "pf";
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
@@ -203,28 +203,6 @@ export function Tracker() {
                   <span className="hidden sm:inline">Workout {d}</span>
                 </Button>
               ))}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <span className="text-xs font-medium text-muted-foreground">Gear</span>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant={mode === "std" ? "default" : "outline"}
-                size="sm"
-                className="h-11"
-                onClick={() => setMode("std")}
-              >
-                Standard
-              </Button>
-              <Button
-                variant={mode === "pf" ? "default" : "outline"}
-                size="sm"
-                className="h-11"
-                onClick={() => setMode("pf")}
-              >
-                <span className="sm:hidden">PF</span>
-                <span className="hidden sm:inline">Planet Fitness</span>
-              </Button>
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
