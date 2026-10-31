@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Oswald, DM_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ConvexClientProvider } from "./providers/ConvexClientProvider";
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ConvexClientProvider>{children}</ConvexClientProvider>
             </TooltipProvider>
           </ThemeProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
