@@ -100,12 +100,25 @@ function formatShortDate(dateStr: string): string {
   return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 }
 
-export function getExerciseName(exerciseId: string): string {
+export function getExerciseName(
+  exerciseId: string,
+  sessions: Session[] = [],
+): string {
   for (const day of Object.keys(PLAN) as Day[]) {
     const match = PLAN[day].ex.find((e) => e.id === exerciseId);
     if (match) return match.name;
   }
+  for (const session of sessions) {
+    const custom = session.customExercises?.find((e) => e.id === exerciseId);
+    if (custom) return custom.name;
+  }
   return exerciseId;
+}
+
+export function completedOnly(sessions: Session[]): Session[] {
+  return sessions.filter(
+    (s) => s.status !== "active" && s.status !== "cancelled",
+  );
 }
 
 export function sessionsThisWeek(sessions: Session[], now = new Date()): number {
@@ -185,7 +198,7 @@ export function recentPRs(sessions: Session[], limit = 5): RecentPR[] {
         if (!current || score > current.score) {
           best.set(exerciseId, {
             exerciseId,
-            exerciseName: getExerciseName(exerciseId),
+            exerciseName: getExerciseName(exerciseId, sessions),
             weight,
             reps,
             date: session.date,
@@ -292,17 +305,18 @@ export function computeDashboardStats(
     };
   }
 
+  const done = completedOnly(sessions);
   return {
-    sessionsThisWeek: sessionsThisWeek(sessions),
-    currentStreak: currentStreak(sessions),
-    totalVolume: totalVolume(sessions),
-    weeklyVolume: weeklyVolumeTotal(sessions),
-    loggedDates: [...new Set(sessions.map((s) => s.date))],
-    recentPRs: recentPRs(sessions),
-    weeklyChart: weeklyVolumeChart(sessions),
-    recentActivity: recentActivity(sessions),
-    nudges: buildNudges(sessions),
-    nextWorkout: suggestNextWorkout(sessions),
+    sessionsThisWeek: sessionsThisWeek(done),
+    currentStreak: currentStreak(done),
+    totalVolume: totalVolume(done),
+    weeklyVolume: weeklyVolumeTotal(done),
+    loggedDates: [...new Set(done.map((s) => s.date))],
+    recentPRs: recentPRs(done),
+    weeklyChart: weeklyVolumeChart(done),
+    recentActivity: recentActivity(done),
+    nudges: buildNudges(done),
+    nextWorkout: suggestNextWorkout(done),
     loading: false,
   };
 }

@@ -22,3 +22,6 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# local MCP config (may contain PATs)
+.cursor/

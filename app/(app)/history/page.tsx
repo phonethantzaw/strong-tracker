@@ -77,6 +77,9 @@ export default function HistoryPage() {
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium">Workout {session.day}</p>
                       <Badge variant="outline">{session.mode === "pf" ? "Planet Fitness" : "Standard"}</Badge>
+                      {session.status === "active" ? (
+                        <Badge>In progress</Badge>
+                      ) : null}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {session.date} · {sessionLiftCount(session)} lifts · {formatVolume(sessionVolume(session))} lbs

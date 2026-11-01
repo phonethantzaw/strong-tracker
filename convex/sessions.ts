@@ -1,10 +1,58 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
-const setEntry = v.object({ weight: v.string(), reps: v.string() });
+const setEntry = v.object({
+  weight: v.string(),
+  reps: v.string(),
+  equipment: v.optional(v.string()),
+  notes: v.optional(v.string()),
+  loggedAt: v.optional(v.number()),
+  inputUnit: v.optional(v.union(v.literal("lb"), v.literal("kg"))),
+});
 const entriesArg = v.record(v.string(), v.array(setEntry));
 
-// All sessions for the signed-in user, newest first.
+type SetRow = {
+  weight: string;
+  reps: string;
+  equipment?: string;
+  notes?: string;
+  loggedAt?: number;
+  inputUnit?: "lb" | "kg";
+};
+
+function mergeSets(existing: SetRow[] | undefined, incoming: SetRow[]): SetRow[] {
+  const max = Math.max(existing?.length ?? 0, incoming.length);
+  const out: SetRow[] = [];
+  for (let i = 0; i < max; i++) {
+    const prev = existing?.[i];
+    const next = incoming[i];
+    if (!next) {
+      if (prev) out.push(prev);
+      continue;
+    }
+    out.push({
+      weight: next.weight,
+      reps: next.reps,
+      equipment: next.equipment ?? prev?.equipment,
+      notes: next.notes ?? prev?.notes,
+      loggedAt: next.loggedAt ?? prev?.loggedAt,
+      inputUnit: next.inputUnit ?? prev?.inputUnit,
+    });
+  }
+  return out;
+}
+
+function mergeEntries(
+  existing: Record<string, SetRow[]> | undefined,
+  incoming: Record<string, SetRow[]>,
+): Record<string, SetRow[]> {
+  const merged: Record<string, SetRow[]> = { ...(existing ?? {}) };
+  for (const [exId, sets] of Object.entries(incoming)) {
+    merged[exId] = mergeSets(existing?.[exId], sets);
+  }
+  return merged;
+}
+
 export const listMine = query({
   args: {},
   handler: async (ctx) => {
@@ -14,11 +62,12 @@ export const listMine = query({
       .query("sessions")
       .withIndex("by_user", (q) => q.eq("userId", identity.subject))
       .collect();
-    return rows.sort((a, b) => b.createdAt - a.createdAt);
+    return rows
+      .filter((s) => s.status !== "cancelled")
+      .sort((a, b) => b.createdAt - a.createdAt);
   },
 });
 
-// Save (or overwrite) the session for a given date + workout day.
 export const save = mutation({
   args: {
     date: v.string(),
@@ -36,13 +85,19 @@ export const save = mutation({
         q.eq("userId", identity.subject).eq("date", args.date),
       )
       .collect();
-    const existing = sameDate.find((s) => s.day === args.day);
+    const existing = sameDate.find(
+      (s) => s.day === args.day && s.status !== "cancelled",
+    );
 
     if (existing) {
+      const merged = mergeEntries(existing.entries, args.entries);
       await ctx.db.patch(existing._id, {
-        entries: args.entries,
+        entries: merged,
         mode: args.mode,
         createdAt: Date.now(),
+        status: existing.status ?? "completed",
+        customExercises: existing.customExercises,
+        exerciseOrder: existing.exerciseOrder,
       });
       return existing._id;
     }
@@ -54,6 +109,8 @@ export const save = mutation({
       mode: args.mode,
       entries: args.entries,
       createdAt: Date.now(),
+      status: "completed",
+      completedAt: Date.now(),
     });
   },
 });

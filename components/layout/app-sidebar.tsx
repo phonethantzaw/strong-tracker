@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Dumbbell,
   History,
+  KeyRound,
   LayoutDashboard,
   PanelLeft,
   PlayCircle,
@@ -30,6 +31,7 @@ const navItems = [
   { href: "/track", label: "Track Workout", icon: Dumbbell },
   { href: "/videos", label: "Videos", icon: PlayCircle },
   { href: "/history", label: "History", icon: History },
+  { href: "/settings/mcp", label: "MCP Access", icon: KeyRound },
 ];
 
 export function AppSidebar() {
@@ -89,9 +91,9 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border p-3 group-data-[collapsible=icon]:hidden">
         <p className="text-xs text-muted-foreground">
-          A → B → A, then B → A → B
+          A → B → C → D rotation
           <br />
-          ~3 days / week
+          ~4 days / week
         </p>
       </SidebarFooter>
       <SidebarRail />

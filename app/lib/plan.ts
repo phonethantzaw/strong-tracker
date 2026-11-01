@@ -25,6 +25,11 @@ export type Workout = {
 
 export const DAYS: Day[] = ["A", "B", "C", "D"];
 
+export const PROGRAM = {
+  rotation: DAYS,
+  targetPerWeek: 4,
+} as const;
+
 export const PLAN: Record<Day, Workout> = {
   A: {
     title: "Workout A",

@@ -5,6 +5,8 @@ Next.js (App Router) + TypeScript + Convex + Clerk, deployed on Vercel. Run with
 Log every set, see last session's numbers so you can beat them, flip between standard and
 Planet Fitness equipment, and run rest timers. Data syncs to your account across devices.
 
+**MCP:** AI agents can log workouts and pull progress via `/api/mcp` (remote) or `bun run mcp:stdio` (local). Setup guide: [docs/mcp-setup.md](docs/mcp-setup.md). Create tokens at **MCP Access** in the app.
+
 ---
 
 ## What you build, in order
