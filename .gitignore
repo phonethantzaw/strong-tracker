@@ -25,3 +25,5 @@ next-env.d.ts
 
 # local MCP config (may contain PATs)
 .cursor/
+
+package-lock.json

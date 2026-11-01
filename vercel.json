@@ -1,3 +1,4 @@
 {
+  "installCommand": "bun install",
   "buildCommand": "bunx convex deploy --cmd 'next build'"
 }
