@@ -13,6 +13,7 @@ import type * as mcp from "../mcp.js";
 import type * as mcpTokens from "../mcpTokens.js";
 import type * as programVideos from "../programVideos.js";
 import type * as rateLimit from "../rateLimit.js";
+import type * as seed from "../seed.js";
 import type * as sessions from "../sessions.js";
 
 import type {
@@ -27,6 +28,7 @@ declare const fullApi: ApiFromModules<{
   mcpTokens: typeof mcpTokens;
   programVideos: typeof programVideos;
   rateLimit: typeof rateLimit;
+  seed: typeof seed;
   sessions: typeof sessions;
 }>;
 

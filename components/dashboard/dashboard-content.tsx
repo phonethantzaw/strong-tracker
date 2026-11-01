@@ -72,7 +72,10 @@ export function DashboardContent() {
           <VolumeChart data={stats.weeklyChart} loading={stats.loading} />
         </div>
         <div className="h-full">
-          <ActivityCalendar loggedDates={stats.loggedDates} />
+          <ActivityCalendar
+            loggedDates={stats.loggedDates}
+            activityByDate={stats.activityByDate}
+          />
         </div>
       </section>
 

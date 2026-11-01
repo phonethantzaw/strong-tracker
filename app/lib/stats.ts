@@ -46,6 +46,7 @@ export type DashboardStats = {
   recentPRs: RecentPR[];
   weeklyChart: WeeklyVolumePoint[];
   recentActivity: ActivityItem[];
+  activityByDate: Record<string, ActivityItem[]>;
   nudges: Nudge[];
   nextWorkout: Day;
   loading: boolean;
@@ -226,6 +227,14 @@ export function recentActivity(sessions: Session[], limit = 8): ActivityItem[] {
   }));
 }
 
+export function activityByDate(sessions: Session[]): Record<string, ActivityItem[]> {
+  const grouped: Record<string, ActivityItem[]> = {};
+  for (const item of recentActivity(sessions, sessions.length)) {
+    (grouped[item.date] ??= []).push(item);
+  }
+  return grouped;
+}
+
 export function suggestNextWorkout(sessions: Session[]): Day {
   const latest = sessions[0];
   if (!latest) return "A";
@@ -299,6 +308,7 @@ export function computeDashboardStats(
       recentPRs: [],
       weeklyChart: weeklyVolumeChart([]),
       recentActivity: [],
+      activityByDate: {},
       nudges: [],
       nextWorkout: "A",
       loading: true,
@@ -315,6 +325,7 @@ export function computeDashboardStats(
     recentPRs: recentPRs(done),
     weeklyChart: weeklyVolumeChart(done),
     recentActivity: recentActivity(done),
+    activityByDate: activityByDate(done),
     nudges: buildNudges(done),
     nextWorkout: suggestNextWorkout(done),
     loading: false,
